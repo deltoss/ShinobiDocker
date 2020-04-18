@@ -1,0 +1,73 @@
+version: '3.7'
+
+services:
+
+### MariaDB Container #######################################
+
+    mariadb:
+      build: ./mariadb
+      volumes:
+        - ${DATA_SAVE_PATH}/mariadb:/var/lib/mysql
+        - ${MARIADB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
+      ports:
+        - "${MARIADB_PORT}:3306"
+      environment:
+        - MYSQL_DATABASE=${MARIADB_DATABASE}
+        - MYSQL_USER=${MARIADB_USER}
+        - MYSQL_PASSWORD=${MARIADB_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MARIADB_ROOT_PASSWORD}
+      networks:
+        - backend
+
+### phpMyAdmin Container ####################################
+
+    phpmyadmin:
+      build: ./phpmyadmin
+      environment:
+        - PMA_ARBITRARY=1
+      ports:
+        - "${PMA_PORT}:80"
+      depends_on:
+        - "mariadb"
+      networks:
+        - frontend
+        - backend
+
+### Shinobi Container #######################################
+
+    shinobi:
+      build: ./shinobi
+      depends_on:
+        - "mariadb"
+      ports:
+        - "8080:8080"
+      environment:
+        - DATABASE_HOST=mariadb
+        - DATABASE_USER=${SHINOBI_DB_USER}
+        - DATABASE_PASSWORD=${SHINOBI_DB_PASSWORD}
+        - DATABASE_PORT=${SHINOBI_DB_PORT}
+      volumes:
+        - ${DATA_SAVE_PATH}/shinobi/config:/config
+        - ${DATA_SAVE_PATH}/shinobi/videos:/opt/shinobi/videos
+        - ${DATA_SAVE_PATH}/shinobi/datadir:/var/lib/mysql
+      networks:
+        - frontend
+        - backend
+
+### Networks Setup ############################################
+
+networks:
+  frontend:
+    driver: "bridge"
+  backend:
+    driver: "bridge"
+
+### Volumes Setup #############################################
+
+volumes:
+  mariadb:
+    driver: "local"
+  phpmyadmin:
+    driver: "local"
+  shinobi:
+    driver: "local"

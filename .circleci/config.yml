@@ -1,49 +1,55 @@
-version: 2
+version: 2.1
 
 defaults: &defaults
   working_directory: ~/repo
   docker:
     - image: cimg/base:stable
-  steps:
-    - checkout
-    - run:
-        name: Login to Docker Registry
-        command: docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY
-    - run:
-        name: Build docker images
-        command: docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
+
+commands:
+  docker_base_prep:
+    description: "Checkout, docker build & login"
+    steps:
+      - checkout
+      # For more information on what this special docker step does, see:
+      #   https://circleci.com/docs/2.0/building-docker-images/#overview
+      - setup_remote_docker
+      - run:
+          name: Login to Docker Registry
+          command: echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username "$DOCKER_REGISTRY_USER" --password-stdin $DOCKER_REGISTRY
+      - run:
+          name: Build docker images
+          command: docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
 
 jobs:
   build-master:
     <<: *defaults
 
     steps:
+      - docker_base_prep
       - run:
-          name: Publish Shinobi docker image as latest
-          command: docker-compose push
-      - run:
-          name: Retag Shinobi image
-          command: docker tag "mtran0011/shinobi" "mtran0011/shinobi:$CIRCLE_TAG"
+          name: Re-tag Shinobi image
+          command: docker tag "shinobi" "$DOCKER_REGISTRY_USER/shinobi:latest"
       - run:
           name: Remove old Shinobi image tag
-          command: docker rmi "mtran0011/shinobi"
+          command: docker rmi "shinobi"
       - run:
-          name: Publish Shinobi image
-          command: docker push mtran0011/shinobi:$CIRCLE_TAG
+          name: Publish Shinobi docker image as latest
+          command: docker push "$DOCKER_REGISTRY_USER/shinobi:latest"
 
   build:
     <<: *defaults
 
     steps:
+      - docker_base_prep
       - run:
-          name: Retag Shinobi image
-          command: docker tag "mtran0011/shinobi" "mtran0011/shinobi:$CIRCLE_SHA1"
+          name: Re-tag Shinobi image
+          command: docker tag "shinobi" "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1"
       - run:
           name: Remove old Shinobi image tag
-          command: docker rmi "mtran0011/shinobi"
+          command: docker rmi "shinobi"
       - run:
           name: Publish Shinobi image
-          command: docker push mtran0011/shinobi:$CIRCLE_SHA1
+          command: docker push "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1"
 
 workflows:
   version: 2
@@ -54,8 +60,6 @@ workflows:
             branches:
               only:
                 - master
-            tags:
-              only: /^[0-9]+.[0-9]+/
       - build:
           filters:
             branches:

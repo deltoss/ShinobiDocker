@@ -1,4 +1,4 @@
-# docker-compose override file for building images For:
+# docker-compose override file for building images for:
 # * Testing the Shinobi Docker image locally.
 # * Uploading the Shinobi Docker image to the official dockerhub registry.
 #
@@ -7,9 +7,11 @@
 #   docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
 #
 # To push to dockerhub registry, run below commands:
-#   docker login
 #   docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
-#   docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" push
+#   docker login
+#   docker tag "shinobi" "<YourDockerUserName>/shinobi:<tag>"
+#   docker rmi "shinobi"
+#   docker push "<YourDockerUserName>/shinobi:<tag>"
 version: '3.7'
 
 services:
@@ -17,4 +19,5 @@ services:
 ### Shinobi Container #######################################
 
     shinobi:
+      image: shinobi
       build: ./shinobi

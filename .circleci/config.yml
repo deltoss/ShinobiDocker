@@ -1,0 +1,63 @@
+version: 2
+
+defaults: &defaults
+  working_directory: ~/repo
+  docker:
+    - image: cimg/base:stable
+  steps:
+    - checkout
+    - run:
+        name: Login to Docker Registry
+        command: docker login -u "$DOCKER_REGISTRY_USER" -p "$DOCKER_REGISTRY_PASSWORD" $DOCKER_REGISTRY
+    - run:
+        name: Build docker images
+        command: docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
+
+jobs:
+  build-master:
+    <<: *defaults
+
+    steps:
+      - run:
+          name: Publish Shinobi docker image as latest
+          command: docker-compose push
+      - run:
+          name: Retag Shinobi image
+          command: docker tag "mtran0011/shinobi" "mtran0011/shinobi:$CIRCLE_TAG"
+      - run:
+          name: Remove old Shinobi image tag
+          command: docker rmi "mtran0011/shinobi"
+      - run:
+          name: Publish Shinobi image
+          command: docker push mtran0011/shinobi:$CIRCLE_TAG
+
+  build:
+    <<: *defaults
+
+    steps:
+      - run:
+          name: Retag Shinobi image
+          command: docker tag "mtran0011/shinobi" "mtran0011/shinobi:$CIRCLE_SHA1"
+      - run:
+          name: Remove old Shinobi image tag
+          command: docker rmi "mtran0011/shinobi"
+      - run:
+          name: Publish Shinobi image
+          command: docker push mtran0011/shinobi:$CIRCLE_SHA1
+
+workflows:
+  version: 2
+  build-publish:
+    jobs:
+      - build-master:
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              only: /^[0-9]+.[0-9]+/
+      - build:
+          filters:
+            branches:
+              ignore:
+                - master

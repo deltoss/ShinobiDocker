@@ -36,7 +36,7 @@ services:
 ### Shinobi Container #######################################
 
     shinobi:
-      build: ./shinobi
+      image: mtran0011/shinobi
       depends_on:
         - "mariadb"
       ports:

@@ -1,6 +1,6 @@
 # Shinobi CCTV on Docker
 
-This is based on the official [Shinobi Docker image](https://gitlab.com/Shinobi-Systems/ShinobiDocker).
+This is based on the official [Shinobi docker image](https://gitlab.com/Shinobi-Systems/ShinobiDocker).
 
 This is a `docker-compose` setup where the Shinobi image and the MariaDB is not in the same image. This keeps things easy to maintain and swap the database out.
 

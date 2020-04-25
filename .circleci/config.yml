@@ -14,11 +14,24 @@ commands:
       #   https://circleci.com/docs/2.0/building-docker-images/#overview
       - setup_remote_docker
       - run:
-          name: Login to Docker Registry
-          command: echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username "$DOCKER_REGISTRY_USER" --password-stdin $DOCKER_REGISTRY
+          name: Enable Docker CLI experimental features
+          command: echo 'export DOCKER_CLI_EXPERIMENTAL=enabled' >> $BASH_ENV
       - run:
-          name: Build docker images
-          command: docker-compose -f "docker-compose.yml" -f "docker-compose.dockerhub.yml" build
+          name: Configure multi-arch builder
+          command: |
+            # Registers binfmt for ARM support when doing multi-arch builds
+            # For more information, see https://www.docker.com/blog/getting-started-with-docker-for-arm-on-linux/
+            docker run --rm --privileged docker/binfmt:a7996909642ee92942dcd6cff44b9b95f08dad64
+            # Creates and uses the multi-arch builder, as default
+            # builder doesn't allow for multi-arch builds
+            docker context create node-multiarchbuilder
+            docker buildx create --use --name multiarchbuilder node-multiarchbuilder
+      - run:
+          name: List supported architecture for multi-arch builder
+          command: docker buildx inspect --bootstrap
+      - run:
+          name: Validate docker-compose setup
+          command: docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" build
 
 jobs:
   build-master:
@@ -27,14 +40,13 @@ jobs:
     steps:
       - docker_base_prep
       - run:
-          name: Re-tag Shinobi image
-          command: docker tag "shinobi" "$DOCKER_REGISTRY_USER/shinobi:latest"
-      - run:
-          name: Remove old Shinobi image tag
-          command: docker rmi "shinobi"
-      - run:
-          name: Publish Shinobi docker image as latest
-          command: docker push "$DOCKER_REGISTRY_USER/shinobi:latest"
+          name: Build & push Shinobi as latest multi-arch docker image
+          command: |
+            echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username "$DOCKER_REGISTRY_USER" --password-stdin
+            cd shinobi
+            # Build with multi-arch build, with logging set to 'plain'
+            # to avoid logging issues with the CI service.
+            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:latest" --progress plain --push .
 
   build:
     <<: *defaults
@@ -42,14 +54,11 @@ jobs:
     steps:
       - docker_base_prep
       - run:
-          name: Re-tag Shinobi image
-          command: docker tag "shinobi" "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1"
-      - run:
-          name: Remove old Shinobi image tag
-          command: docker rmi "shinobi"
-      - run:
-          name: Publish Shinobi image
-          command: docker push "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1"
+          name: Build & push Shinobi as multi-arch docker image
+          command: |
+            echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username "$DOCKER_REGISTRY_USER" --password-stdin
+            cd shinobi
+            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1" --progress plain --push .
 
 workflows:
   version: 2

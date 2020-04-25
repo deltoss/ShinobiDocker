@@ -1,4 +1,4 @@
-FROM node:alpine3.11
+FROM node:lts-alpine3.11
 
 LABEL Author="Deltoss, MiGoller, mrproper, pschmitt & moeiscool"
 
@@ -50,9 +50,21 @@ RUN apk update && \
         gnutls \ 
         nasm \ 
         tar \ 
-        x264 \ 
-        git \ 
-        mariadb-client
+        x264
+
+# Install additional packages
+RUN apk update && \
+    apk add --no-cache \
+        ffmpeg \
+        git \
+        make \
+        mariadb-client \
+        openrc \
+        pkgconfig \
+        python \
+        wget \
+        tar \
+        xz
 
 # Install ffmpeg static build version from cdn.shinobi.video
 RUN wget https://cdn.shinobi.video/installers/ffmpeg-release-64bit-static.tar.xz && \

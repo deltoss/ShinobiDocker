@@ -1,0 +1,18 @@
+# docker-compose override file for building images for testing
+# the Shinobi Docker image locally.
+#
+# To build and run the docker-compose set up locally with
+# the Shinobi image built from the Dockerfile, run below commands:
+#   docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" build
+#   docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" up
+# Alternatively, with a single line:
+#   docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" up --build
+version: '3.7'
+
+services:
+
+### Shinobi Container #######################################
+
+    shinobi:
+      image: shinobi
+      build: ./shinobi

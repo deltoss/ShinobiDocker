@@ -13,6 +13,6 @@ services:
 
 ### Shinobi Container #######################################
 
-  shinobi:
-    image: shinobi
-    build: ./shinobi
+    shinobi:
+      image: shinobi
+      build: ./shinobi

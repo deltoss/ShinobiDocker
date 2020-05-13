@@ -1,7 +1,6 @@
-FROM mariadb:10.1
+ARG MARIADB_IMAGE=mariadb:latest
+FROM $MARIADB_IMAGE
 
 ADD my.cnf /etc/mysql/conf.d/my.cnf
-
-CMD ["mysqld"]
 
 EXPOSE 3306

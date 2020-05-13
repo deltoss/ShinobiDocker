@@ -1,9 +1,7 @@
-FROM phpmyadmin/phpmyadmin
+ARG PMA_IMAGE=phpmyadmin/phpmyadmin:latest
+FROM $PMA_IMAGE
 
-MAINTAINER Bo-Yi Wu <appleboy.tw@gmail.com>
-
-# Add volume for sessions to allow session persistence
+# Add volume to allow session persistence
 VOLUME /sessions
 
-# We expose phpMyAdmin on port 80
 EXPOSE 80

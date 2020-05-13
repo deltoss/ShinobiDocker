@@ -7,7 +7,7 @@
 #   docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" up
 # Alternatively, with a single line:
 #   docker-compose -f "docker-compose.yml" -f "docker-compose.local.yml" up --build
-version: '3.7'
+version: '3.8'
 
 services:
 

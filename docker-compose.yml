@@ -1,13 +1,16 @@
-version: '3.7'
+version: '3.8'
 
 services:
 
 ### MariaDB Container #######################################
 
     mariadb:
-      build: ./mariadb
+      build:
+        context: ./mariadb
+        args:
+          MARIADB_IMAGE: ${MARIADB_IMAGE}
       volumes:
-        - ${DATA_SAVE_PATH}/mariadb:/var/lib/mysql
+        - mariadb:/var/lib/mysql
         - ${MARIADB_ENTRYPOINT_INITDB}:/docker-entrypoint-initdb.d
       ports:
         - "${MARIADB_PORT}:3306"
@@ -20,7 +23,10 @@ services:
 ### phpMyAdmin Container ####################################
 
     phpmyadmin:
-      build: ./phpmyadmin
+      build:
+        context: ./phpmyadmin
+        args:
+          PMA_IMAGE: ${PMA_IMAGE}
       environment:
         - PMA_ARBITRARY=1
       ports:
@@ -31,7 +37,7 @@ services:
 ### Shinobi Container #######################################
 
     shinobi:
-      image: mtran0011/shinobi:latest
+      image: ${SHINOBI_IMAGE}
       depends_on:
         - "mariadb"
       ports:
@@ -45,3 +51,9 @@ services:
         - ${DATA_SAVE_PATH}/shinobi/config:/config
         - ${DATA_SAVE_PATH}/shinobi/videos:/opt/shinobi/videos
         - ${DATA_SAVE_PATH}/shinobi/datadir:/var/lib/mysql
+
+
+### Volumes Setup #############################################
+
+volumes:
+  mariadb:

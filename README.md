@@ -49,18 +49,24 @@ Raspberry Pi 3 & 4 uses the ARMv7 32-bit architecture. This Shinobi image suppor
 
 Thus, you could either make your own image, and build it to support ARMv7, or use a non-official MariaDB image which supports ARMv7.
 
-To change the MariaDB image, you can simply change the value of `MARIADB_IMAGE` in the `.env` file.
+To change both the `MariaDB` image & the `PHPMyAdmin` image. To do this, you can simply change the values for the following keys in the `.env` file:
+* `MARIADB_IMAGE`
+* `PMA_IMAGE`
 
 For example, change this:
 
 ```env
 MARIADB_IMAGE=mariadb:latest
+# ...
+PMA_IMAGE=phpmyadmin/phpmyadmin:latest
 ```
 
 To this:
 
 ```env
 MARIADB_IMAGE=yobasystems/alpine-mariadb:latest
+# ...
+PMA_IMAGE=jackgruber/phpmyadmin:latest
 ```
 
-[yobasystems/alpine-mariadb](https://github.com/yobasystems/alpine-mariadb) is a third-party MariaDB image which supports ARMv7.
+[yobasystems/alpine-mariadb](https://hub.docker.com/r/yobasystems/alpine-mariadb/) and [jackgruber/phpmyadmin](https://hub.docker.com/r/jackgruber/phpmyadmin) are third-party images which supports ARMv7.

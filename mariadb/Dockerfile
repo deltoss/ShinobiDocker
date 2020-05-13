@@ -1,6 +1,4 @@
-FROM mariadb:latest
-
-MAINTAINER Mahmoud Zalt <mahmoud@zalt.me>
+FROM mariadb:10.1
 
 ADD my.cnf /etc/mysql/conf.d/my.cnf
 

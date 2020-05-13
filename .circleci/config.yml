@@ -3,7 +3,7 @@ version: 2.1
 defaults: &defaults
   working_directory: ~/repo
   docker:
-    - image: cimg/base:stable
+    - image: cimg/base:2020.05
 
 commands:
   docker_base_prep:

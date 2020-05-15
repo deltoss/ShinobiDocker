@@ -45,7 +45,7 @@ cd shinobi
 docker buildx create --name shinobibuilder
 docker buildx use shinobibuilder
 docker login
-docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm64/v8 -t mtran0011/shinobi --push .
+docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8 -t mtran0011/shinobi --push .
 ```
 
 If you'd like to remove your custom builder, you can use:

@@ -46,7 +46,7 @@ jobs:
             cd shinobi
             # Build with multi-arch build, with logging set to 'plain'
             # to avoid logging issues with the CI service.
-            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:latest" --progress plain --push .
+            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:latest" --progress plain --push .
 
   build:
     <<: *defaults
@@ -58,7 +58,7 @@ jobs:
           command: |
             echo "$DOCKER_REGISTRY_PASSWORD" | docker login --username "$DOCKER_REGISTRY_USER" --password-stdin
             cd shinobi
-            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1" --progress plain --push .
+            docker buildx build --platform linux/amd64,linux/arm/v6,linux/arm/v7,linux/arm64/v8 -t "$DOCKER_REGISTRY_USER/shinobi:$CIRCLE_SHA1" --progress plain --push .
 
 workflows:
   version: 2

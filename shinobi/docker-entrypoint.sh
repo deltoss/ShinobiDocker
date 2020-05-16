@@ -25,10 +25,18 @@ if [ ! -f /opt/shinobi/plugins/motion/conf.json ]; then
     cp /opt/shinobi/plugins/motion/conf.sample.json /opt/shinobi/plugins/motion/conf.json
 fi
 
+# Wait for the database to be available
+if [ -n "${DATABASE_HOST}" ]; then
+    echo "Wait for MySQL server" ...
+    while ! mysqladmin ping -h "$DATABASE_HOST" -P $DATABASE_PORT -u "$DATABASE_USER" --password="$DATABASE_PASSWORD"; do
+        sleep 1
+    done
+fi
+
 echo "Setting up MySQL database if it does not exists ..."
 
 echo "Create database schema if it does not exists ..."
-mysql -h $DATABASE_HOST -P $DATABASE_PORT -u "$DATABASE_USER" --password="$DATABASE_PASSWORD" -e "source /opt/shinobi/sql/framework.sql" || true
+mysql -h "$DATABASE_HOST" -P $DATABASE_PORT -u "$DATABASE_USER" --password="$DATABASE_PASSWORD" -e "source /opt/shinobi/sql/framework.sql" || true
 
 echo "Set keys for CRON and PLUGINS from environment variables ..."
 sed -i -e 's/"key":"73ffd716-16ab-40f4-8c2e-aecbd3bc1d30"/"key":"'"${CRON_KEY}"'"/g' \

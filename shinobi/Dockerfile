@@ -42,8 +42,7 @@ RUN apk update && \
         x264-dev \ 
         x265-dev \ 
         yasm-dev && \
-    apk add --no-cache --virtual \ 
-        .build-dependencies \ 
+    apk add --no-cache \ 
         build-base \ 
         bzip2 \ 
         coreutils \ 
@@ -65,14 +64,6 @@ RUN apk update && \
         wget \
         tar \
         xz
-
-# Install ffmpeg static build version from cdn.shinobi.video
-RUN wget https://cdn.shinobi.video/installers/ffmpeg-release-64bit-static.tar.xz && \
-    tar xpvf ./ffmpeg-release-64bit-static.tar.xz -C ./ && \
-    cp -f ./ffmpeg-3.3.4-64bit-static/ff* /usr/bin/ && \
-    chmod +x /usr/bin/ff* && \
-    rm -f ffmpeg-release-64bit-static.tar.xz && \
-    rm -rf ./ffmpeg-3.3.4-64bit-static
 
 WORKDIR /opt/shinobi
 

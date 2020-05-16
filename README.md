@@ -15,7 +15,7 @@ The hosted [Shinobi Docker image](https://hub.docker.com/repository/docker/mtran
   * You can even decide to have a DB sitting directly on a physical machine, rather then as a container.
 * Multi-arch builds, which means the Shinobi image is compatible with different CPU architectures.
   * Such as ARM used by Raspberry Pis, etc.
-* `PHP My Admin` is included, so you can manage the data in your database, simply by browsing to `http://xxx.xxx.xxx.xxx:8888`.
+* `PHP My Admin` is included, so you can manage the data in your database, simply by browsing to `http://xxx.xxx.xxx.xxx:8888`. This gives you an easy way to export/import your Shinobi database via a GUI!
 
 ### How to Dock Shinobi
 

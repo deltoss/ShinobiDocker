@@ -2,9 +2,11 @@
 
 This is based on the official [Shinobi docker image](https://gitlab.com/Shinobi-Systems/ShinobiDocker).
 
-This is a `docker-compose` setup where the Shinobi image and the MariaDB is not in the same image. This keeps things easy to maintain and swap the database out.
+This uses a `docker-compose` setup where the Shinobi image and the MariaDB is not in the same image. This keeps things easy to maintain and swap the database out.
 
 The database can even be on a separate server machine, or not even dockerised.
+
+The hosted [Shinobi Docker image](https://hub.docker.com/repository/docker/mtran0011/shinobi) is built from this repository.
 
 ### Features
 
